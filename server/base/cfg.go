@@ -87,7 +87,10 @@ type ServerConfig struct {
 	NoCompressLimit int  `json:"no_compress_limit"` // int
 
 	DisplayError       bool `json:"display_error"`
-	ExcludeExportIp    bool `json:"exclude_export_ip"`
+	ExcludeExportIp    bool   `json:"exclude_export_ip"`
+	EnableBanner       bool   `json:"enable_banner"`
+	SplitIncludeDomains string `json:"split_include_domains"`
+	SplitExcludeDomains string `json:"split_exclude_domains"`
 	AuthAloneOtp       bool `json:"auth_alone_otp"`
 	EncryptionPassword bool `json:"encryption_password"`
 

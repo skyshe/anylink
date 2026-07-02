@@ -72,6 +72,10 @@ var configs = []config{
 
 	{Typ: cfgBool, Name: "display_error", Usage: "客户端显示详细错误信息(线上环境慎开启)", ValBool: false},
 	{Typ: cfgBool, Name: "exclude_export_ip", Usage: "排除出口ip路由(出口ip不加密传输)", ValBool: true},
+	// 动态域名拆分隧道配置（兼容旧版私有分支）
+	{Typ: cfgBool, Name: "enable_banner", Usage: "是否开启横幅功能", ValBool: true},
+	{Typ: cfgStr, Name: "split_include_domains", Usage: "全局动态拆分包含域名(逗号分隔)", ValStr: ""},
+	{Typ: cfgStr, Name: "split_exclude_domains", Usage: "全局动态拆分排除域名(逗号分隔)", ValStr: ""},
 	{Typ: cfgBool, Name: "auth_alone_otp", Usage: "登录单独验证OTP窗口", ValBool: false},
 	{Typ: cfgBool, Name: "encryption_password", Usage: "用户密码是否加密保存", ValBool: false},
 

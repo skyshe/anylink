@@ -152,6 +152,34 @@ func LinkTunnel(w http.ResponseWriter, r *http.Request) {
 		HttpAddHeader(w, "X-CSTP-Split-Exclude", exportIp4+"/255.255.255.255")
 	}
 
+	// ============================================
+	// 动态域名拆分隧道 - 兼容 Cisco AnyConnect 4.5+ / Secure Client
+	// 合并全局配置(server.toml)和用户组配置的域名列表
+	// 客户端收到后会自行解析域名并动态写入路由表
+	// ============================================
+	splitIncludeDomains := cSess.Group.DsIncludeDomains
+	if base.Cfg.SplitIncludeDomains != "" {
+		if splitIncludeDomains != "" {
+			splitIncludeDomains += ","
+		}
+		splitIncludeDomains += base.Cfg.SplitIncludeDomains
+	}
+	splitExcludeDomains := cSess.Group.DsExcludeDomains
+	if base.Cfg.SplitExcludeDomains != "" {
+		if splitExcludeDomains != "" {
+			splitExcludeDomains += ","
+		}
+		splitExcludeDomains += base.Cfg.SplitExcludeDomains
+	}
+	if splitIncludeDomains != "" {
+		HttpSetHeader(w, "X-CSTP-Split-Include-Domains", splitIncludeDomains)
+		base.Debug("动态拆分隧道-包含域名", splitIncludeDomains)
+	}
+	if splitExcludeDomains != "" {
+		HttpSetHeader(w, "X-CSTP-Split-Exclude-Domains", splitExcludeDomains)
+		base.Debug("动态拆分隧道-排除域名", splitExcludeDomains)
+	}
+
 	HttpSetHeader(w, "X-CSTP-Lease-Duration", "1209600") // ip地址租期
 	HttpSetHeader(w, "X-CSTP-Session-Timeout", "none")
 	HttpSetHeader(w, "X-CSTP-Session-Timeout-Alert-Interval", "60")
@@ -187,10 +215,8 @@ func LinkTunnel(w http.ResponseWriter, r *http.Request) {
 	HttpSetHeader(w, "X-CSTP-Disable-Always-On-VPN", "false")
 	HttpSetHeader(w, "X-CSTP-Client-Bypass-Protocol", "true")
 	HttpSetHeader(w, "X-CSTP-TCP-Keepalive", "false")
-	// 设置域名拆分隧道（移动端不支持）
-	if mobile != "mobile" {
-		SetPostAuthXml(cSess.Group, w)
-	}
+	// 设置域名拆分隧道（支持所有客户端，包括移动端）
+	SetPostAuthXml(cSess.Group, w)
 
 	w.WriteHeader(http.StatusOK)
 

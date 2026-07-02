@@ -146,10 +146,15 @@ func CreateSession(w http.ResponseWriter, r *http.Request, authSession *AuthSess
 
 	other := &dbdata.SettingOther{}
 	dbdata.SettingGet(other)
+	// 检查是否开启横幅功能（兼容旧版私有分支的 enable_banner 配置）
+	bannerText := other.Banner
+	if !base.Cfg.EnableBanner {
+		bannerText = ""
+	}
 	rd := RequestData{
 		SessionId:    sess.Sid,
 		SessionToken: sess.Sid + "@" + sess.Token,
-		Banner:       other.Banner,
+		Banner:       bannerText,
 		ProfileName:  base.Cfg.ProfileName,
 		ProfileHash:  profileHash,
 		CertHash:     certHash,
